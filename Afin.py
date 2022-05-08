@@ -1,53 +1,95 @@
-def Euclides(n,m): #Usando algoritmo de euclides para saber si son coprimos
+def Euclides(n,m):
     if m==0:
         return n
     else:
         return Euclides(m,(n%m))  
-def inv(a,n):
-    e=Euclides(a,n)
-    if e!=1 or n<0:
-        print("No existe el inverso multiplicativo") #Si no son coprimos o n es negativo no existe inverso
-    elif e==1:
-        for x in range(1,n): #Por teoria el inverso se encuentra en un rango de 1 hasta n
-            if(((a%n)*(x%n) % n)==1): #Buscamos el menor x que cumpla la condicion:(a mod n)(x mod n) mod n = 1
-                return x #Retorna X
-def afin(a,b,c,n):
-    Alfabeto=['a','b','c','d','e','f','g','h','i','j','k', #Alfabeto de 27 letras
+def EuclidesEXT(n,m):
+    if m==0:
+        return (n,1,0)
+    else:
+        (d,x2,y2)=EuclidesEXT(m, n%m)
+        (x,y)=(y2,x2-(((n/m)-((n/m)%1))*y2))
+        return(d,x,y)
+
+def Inverso(a,n):
+    if Euclides(a,n)==1:
+        (d,x,y)=EuclidesEXT(a,n)
+        return int((x%n))
+    else:
+        print("No existe el inverso multiplicativo")
+
+def Afin(a,b,c,n):
+    Alfabeto=['a','b','c','d','e','f','g','h','i','j','k',
                 'l','m','n','ñ','o','p','q','r','s','t','u',
                 'v','w','x','y','z']
-    c=list(c) #Vuelvo el str(c) en una lista de char
-    Cafin=list(c) #Lista de char del mismo tamaño de c donde almacenar resultados
-    print("Descifrar o Cifrar (1/0)")
-    aux=int(input()) #Aux para elegir cifrar o descifrar
-    if aux==1: #Descifrar
+    c=list(c)
+    Cafin=list(c)
+    Cafin2=""
+    print("Descifrar, Cifrar, Descifrar a la fuerza (0/1/2)")
+    aux=int(input())
+    if aux==0:
         i=0
         j=0
-        while i <= 27:#Recorro las letras del alfabeto
-            if c[j]==Alfabeto[i]: #Cuando encuentra la posicion de la letra igual a c
-                Cafin[j]=Alfabeto[(i-b)*inv(a,27)%n] #Formula para el descifrado afin
-                j += 1 #Avanzo a la siguiente letra de C
-                i = -1 #Reinicio la lista de letras para comparar con la siguiente letra de C
-                if j==len(Cafin): #Cuando ya se evaluaron todas las letras salgo del while
+        while i < 27:
+            if (c[j]==Alfabeto[i] and (Euclides(a,27)==1)):
+                Cafin[j]=Alfabeto[(i-b)*Inverso(a,27)%n]
+                j += 1
+                i = -1
+                if j==len(Cafin):
                     break
             i += 1
         print("Descifrado:")
-        print(Cafin) #Imprimo descifrado
-    elif aux==0:#cifrar
+    elif aux==1:
         i=0
         j=0
-        while i <= 27:#Recorro las letras del alfabeto
-            if c[j]==Alfabeto[i]: #Cuando encuentra la posicion de la letra igual a c
-                Cafin[j]=Alfabeto[(a*i+b)%n] #Formula para el cifrado afin
-                j += 1 #Avanzo a la siguiente letra de C
-                i = -1 #Reinicio la lista de letras para comparar con la siguiente letra de C
-                if j==len(Cafin): #Cuando ya se evaluaron todas las letras salgo del while
+        while i < 27:
+            if c[j]==Alfabeto[i]:
+                Cafin[j]=Alfabeto[(a*i+b)%n]
+                j += 1
+                i = -1
+                if j==len(Cafin):
                     break
             i += 1
         print("Cifrado:")
-        print(Cafin) #Imprimo cifrado
+    elif aux==2:
+        a=1
+        b=1
+        i=0
+        j=0
+        k=1
+        while a<27:
+            while b<=27:
+                while i < 27:
+                    if (c[j]==Alfabeto[i] and (Euclides(a,27)==1)):
+                        Cafin[j]=Alfabeto[(i-b)*Inverso(a,27)%n]
+                        j += 1
+                        i = -1
+                        if j==len(Cafin):
+                            for i2 in Cafin:
+                                Cafin2 += i2
+                            print(k,": ",Cafin2,"(",a,",",b,")")
+                            k+=1
+                            print(" ")
+                            Cafin2=""
+                            break
+                    i += 1
+                i=0
+                j=0
+                b+=1
+            a+=1
+            b=1
+    if aux==1 or aux==0:
+        for i2 in Cafin:
+            Cafin2 += i2
+        print(Cafin2)
 
-n=27  
-a=4
-b=7
+#elementalmiqueridowatson
+#okhfsnkfnwfcwjhsnchqywfswf
+#slbcmvrbshzbtñsrqvvmszbvhñbvrqvlalhzbtñsrqvwqaxlzwñaqfqv
+print("Ingrese clave a y clave b")
+a=int(input("a: "))
+b=int(input("b: "))
+print("Ingrese la palabra a descifrar o cifrar")
 c=str(input())
-print(afin(a,b,c,n))
+n=27
+Afin(a,b,c,n)
